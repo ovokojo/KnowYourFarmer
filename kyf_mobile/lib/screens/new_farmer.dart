@@ -58,6 +58,12 @@ class _NewFarmerState extends State<NewFarmer> {
                 decoration: primaryFormDecoration(_labelPhone),
                 validator: phoneValidator,
               ),
+              OutlinedButton.icon(
+                style: ButtonStyle(),
+                icon: Icon(Icons.upload),
+                label: Text("Submit"),
+                onPressed: () {},
+              )
             ],
           )),
         ),
