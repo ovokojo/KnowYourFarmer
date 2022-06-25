@@ -14,9 +14,9 @@ class localStorage {
     return File('$path/$filename.json');
   }
 
-  Future<File> storeFarmerOffline(String uid, Farmer farmer) async {
+  Future<File> storeFarmerOffline(Farmer farmer) async {
     print("storing farmer...");
-    File file = await _getFile(uid);
+    File file = await _getFile(farmer.uid);
     print("storeFarmerOffline: saving file..");
     return file.writeAsString(json.encode(farmer.toJson()));
   }

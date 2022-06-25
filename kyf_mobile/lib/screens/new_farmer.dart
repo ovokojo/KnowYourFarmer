@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kyf_mobile/models/farmer.dart';
+import 'package:kyf_mobile/services/ipfsUploader.dart';
 import 'package:kyf_mobile/services/validations.dart';
 import 'package:kyf_mobile/styles/styles.dart';
+import 'package:uuid/uuid.dart';
 
 class NewFarmer extends StatefulWidget {
   const NewFarmer({Key? key}) : super(key: key);
@@ -18,10 +21,13 @@ class _NewFarmerState extends State<NewFarmer> {
   FocusNode _focusNodePhone = FocusNode();
   ScrollController _scrollController = ScrollController();
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+  var _uid = Uuid();
 
   @override
   Widget build(BuildContext context) {
     bool keyboardIsOpen = MediaQuery.of(context).viewInsets.bottom != 0;
+    final ipfs = ipfsUploader();
 
     return Scaffold(
       appBar: AppBar(
@@ -62,7 +68,15 @@ class _NewFarmerState extends State<NewFarmer> {
                 style: ButtonStyle(),
                 icon: Icon(Icons.upload),
                 label: Text("Submit"),
-                onPressed: () {},
+                onPressed: () {
+                  final newFarmer = Farmer(
+                      uid: _uid.v4(), name: _nameController.text, phone: _phoneController.text);
+                  print(newFarmer.toString());
+                  setState(() {
+                    _isLoading = true;
+                    ipfs.upload(context: context, farmer: newFarmer);
+                  });
+                },
               )
             ],
           )),

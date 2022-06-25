@@ -13,21 +13,21 @@ class Farmer {
     required this.uid,
     required this.name,
     required this.phone,
-    required this.dateOfBirth,
-    required this.address,
-    required this.idNumber,
-    required this.farmGpsLocation,
-    required this.farmSize,
+    this.dateOfBirth,
+    this.address,
+    this.idNumber,
+    this.farmGpsLocation,
+    this.farmSize,
   });
 
   String uid;
   String name;
   String phone;
-  String dateOfBirth;
-  String address;
-  String idNumber;
-  String farmGpsLocation;
-  String farmSize;
+  String? dateOfBirth;
+  String? address;
+  String? idNumber;
+  String? farmGpsLocation;
+  String? farmSize;
 
   factory Farmer.fromJson(Map<String, dynamic> json) => Farmer(
         uid: json["uid"],
@@ -50,4 +50,10 @@ class Farmer {
         "farmGpsLocation": farmGpsLocation,
         "farmSize": farmSize,
       };
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return "${name} ${phone}";
+  }
 }
