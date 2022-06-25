@@ -4,7 +4,7 @@ import 'package:path_provider/path_provider.dart';
 
 class DirectoryGenerator {
   static Future<Directory> _getAppDirectory() async {
-    final Directory _appDirectory = await getApplicationSupportDirectory();
+    final Directory _appDirectory = await getApplicationDocumentsDirectory();
     return _appDirectory;
   }
 
