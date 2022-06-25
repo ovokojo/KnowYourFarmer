@@ -1,10 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:kyf_mobile/models/farmer.dart';
 import 'package:kyf_mobile/services/constants.dart';
 import 'package:kyf_mobile/services/localStorage.dart';
-import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
 
 class ipfsUploader {
   String token = ipfsToken;
@@ -19,35 +19,27 @@ class ipfsUploader {
   }
 
   _uploadToIpfs(BuildContext context, File data) async {
-    // function to upload to ipfs
     print("_uploadToIpfs..");
-    final Uri ipfsUrl = Uri.parse("https://api.nft.storage/upload");
+    dio.Dio dioApi = new dio.Dio();
     try {
-      var request = http.MultipartRequest('POST', ipfsUrl)
-        ..headers.addAll({
-          'accept': 'application/json',
-          // 'Content-Type': 'multipart/form-data',
-          'Content-Type': 'application/octet-stream',
-          'Authorization': 'Bearer $token'
-        })
-        ..files.add(await http.MultipartFile.fromPath('farmers', data.path));
-      //.add(http.MultipartFile.fromBytes('file', await File.fromUri(data.uri).readAsBytes()));
-      // Sending post request...
-      print("Sending post request..");
-      final response = await request.send();
+      dioApi.options.headers['accept'] = 'application/json';
+      dioApi.options.headers['Content-Type'] = 'multipart/form-data';
+      dioApi.options.headers['Authorization'] = 'Bearer $token';
+      String fileName = basename(data.path);
+      dio.FormData formData = dio.FormData.fromMap({
+        "file": await dio.MultipartFile.fromFile(data.path, filename: fileName),
+      });
+      final response = await dioApi.post('https://api.nft.storage/upload', data: formData);
       if (response.statusCode == 200) {
-        print("Success!!");
-        print(response.stream.transform(Utf8Decoder()).listen((value) {
-          print("Response:");
-          print(value);
-          print(value.runtimeType);
-        }));
+        print("success!");
+        print(response.data);
       } else {
+        print("error");
         print(response.statusCode);
+        print(response.data);
       }
     } catch (err) {
       print(err.toString());
     }
-    print("_uploadToIpfs...");
   }
 }
