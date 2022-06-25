@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:kyf_mobile/models/farmer.dart';
 import 'package:kyf_mobile/services/directoryGenerator.dart';
 
-class localStorage {
+class LocalStorage {
   Future<String> get _localPath async {
     Future<String> path = DirectoryGenerator.createFolder("farmers");
     return path;

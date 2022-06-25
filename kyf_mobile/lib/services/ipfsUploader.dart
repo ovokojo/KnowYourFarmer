@@ -1,17 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:kyf_mobile/models/farmer.dart';
+import 'package:kyf_mobile/models/ipfs_response.dart';
 import 'package:kyf_mobile/services/constants.dart';
 import 'package:kyf_mobile/services/localStorage.dart';
 import 'package:path/path.dart';
 
-class ipfsUploader {
+class IpfsUploader {
   String token = ipfsToken;
   upload({required BuildContext context, required Farmer farmer}) async {
     // store data offline
     print("upload...");
-    final farmerData = await localStorage().storeFarmerOffline(farmer);
+    final farmerData = await LocalStorage().storeFarmerOffline(farmer);
     print("farmerData:");
     print(farmerData.runtimeType);
     // Upload to ipfs
@@ -33,6 +35,11 @@ class ipfsUploader {
       if (response.statusCode == 200) {
         print("success!");
         print(response.data);
+        print(response.data.runtimeType);
+        final body = Map<String, dynamic>.from(response.data);
+        final result = Map<String, dynamic>.from(body["value"]);
+        final ipfsResponse = ipfsResponseFromJson(result);
+        print(ipfsResponse.toString());
       } else {
         print("error");
         print(response.statusCode);
