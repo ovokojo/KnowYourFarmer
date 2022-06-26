@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:kyf_mobile/models/farmer.dart';
@@ -11,13 +12,24 @@ import 'package:path/path.dart';
 class IpfsUploader {
   String token = ipfsToken;
   upload({required BuildContext context, required Farmer farmer}) async {
+    // Encrypt data
+    final jsonString = jsonEncode(farmer.toJson());
+    var bytes = utf8.encode(jsonString); // data being hashed
+    var digest = sha256.convert(bytes);
+    final encryptedData = digest.toString();
+    print("encryptedData ${encryptedData.length} chars");
+    print(encryptedData);
     // store data offline
-    print("upload...");
-    final farmerData = await LocalStorage().storeFarmerOffline(farmer);
+    print("storing...");
+    final localEncryptedData =
+        await LocalStorage().storeEncryptedDataOffline(uid: farmer.uid, data: encryptedData);
+    final localFarmerData = await LocalStorage().storeFarmerOffline(farmer);
     print("farmerData:");
-    print(farmerData.runtimeType);
+    print(localFarmerData.runtimeType);
+    // TODO: Send data to server
+
     // Upload to ipfs
-    _uploadToIpfs(context, farmerData);
+    _uploadToIpfs(context, localEncryptedData);
   }
 
   _uploadToIpfs(BuildContext context, File data) async {

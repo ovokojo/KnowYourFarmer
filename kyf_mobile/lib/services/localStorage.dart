@@ -20,4 +20,11 @@ class LocalStorage {
     print("storeFarmerOffline: saving file..");
     return file.writeAsString(json.encode(farmer.toJson()));
   }
+
+  Future<File> storeEncryptedDataOffline({required String uid, required String data}) async {
+    print("storing encrypted data...");
+    File file = await _getFile(uid);
+    print("storeEncryptedDataOffline: saving file..");
+    return file.writeAsString(data);
+  }
 }
