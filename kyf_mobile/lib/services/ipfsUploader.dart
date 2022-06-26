@@ -7,6 +7,7 @@ import 'package:kyf_mobile/models/farmer.dart';
 import 'package:kyf_mobile/models/ipfs_response.dart';
 import 'package:kyf_mobile/services/constants.dart';
 import 'package:kyf_mobile/services/localStorage.dart';
+import 'package:kyf_mobile/services/uploadToServer.dart';
 import 'package:path/path.dart';
 
 class IpfsUploader {
@@ -26,10 +27,10 @@ class IpfsUploader {
     final localFarmerData = await LocalStorage().storeFarmerOffline(farmer);
     print("farmerData:");
     print(localFarmerData.runtimeType);
-    // TODO: Send data to server
-
     // Upload to ipfs
-    _uploadToIpfs(context, localEncryptedData);
+    final cid = await _uploadToIpfs(context, localEncryptedData);
+    // Upload data to server
+    uploadToServer(context: context, ipfsCid: cid, data: jsonString);
     // TODO: delete unencrypted data
   }
 
@@ -53,10 +54,12 @@ class IpfsUploader {
         final result = Map<String, dynamic>.from(body["value"]);
         final ipfsResponse = ipfsResponseFromJson(result);
         print(ipfsResponse.toString());
+        return ipfsResponse.cid;
       } else {
         print("error");
         print(response.statusCode);
         print(response.data);
+        return "";
       }
     } catch (err) {
       print(err.toString());
