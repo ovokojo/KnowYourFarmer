@@ -30,6 +30,7 @@ class IpfsUploader {
 
     // Upload to ipfs
     _uploadToIpfs(context, localEncryptedData);
+    // TODO: delete unencrypted data
   }
 
   _uploadToIpfs(BuildContext context, File data) async {

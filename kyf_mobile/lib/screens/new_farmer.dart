@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kyf_mobile/models/farmer.dart';
+import 'package:kyf_mobile/screens/components/loading_indicators.dart';
 import 'package:kyf_mobile/services/ipfsUploader.dart';
 import 'package:kyf_mobile/services/validations.dart';
 import 'package:kyf_mobile/styles/styles.dart';
@@ -38,50 +39,59 @@ class _NewFarmerState extends State<NewFarmer> {
       body: SafeArea(
           child: Container(
         padding: EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _nameController,
-                    focusNode: _focusNodeName,
-                    cursorColor: Colors.green,
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    decoration: primaryFormDecoration(_labelName),
-                    validator: nameValidator,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  TextFormField(
-                    controller: _phoneController,
-                    focusNode: _focusNodePhone,
-                    cursorColor: Colors.green,
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.next,
-                    decoration: primaryFormDecoration(_labelPhone),
-                    validator: phoneValidator,
-                  ),
-                  OutlinedButton.icon(
-                    style: ButtonStyle(),
-                    icon: Icon(Icons.upload),
-                    label: Text("Submit"),
-                    onPressed: () {
-                      final newFarmer = Farmer(
-                          uid: _uid.v4(), name: _nameController.text, phone: _phoneController.text);
-                      print(newFarmer.toString());
-                      setState(() {
-                        _isLoading = true;
-                        ipfs.upload(context: context, farmer: newFarmer);
-                      });
-                    },
-                  )
-                ],
-              )),
-        ),
+        child: _isLoading
+            ? loadingIndicatorWithLabel(context: context, label: "Uploading")
+            : SingleChildScrollView(
+                controller: _scrollController,
+                child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: _nameController,
+                          focusNode: _focusNodeName,
+                          cursorColor: Colors.green,
+                          keyboardType: TextInputType.text,
+                          textInputAction: TextInputAction.next,
+                          decoration: primaryFormDecoration(_labelName),
+                          validator: nameValidator,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                          controller: _phoneController,
+                          focusNode: _focusNodePhone,
+                          cursorColor: Colors.green,
+                          keyboardType: TextInputType.number,
+                          textInputAction: TextInputAction.next,
+                          decoration: primaryFormDecoration(_labelPhone),
+                          validator: phoneValidator,
+                        ),
+                        OutlinedButton.icon(
+                          style: ButtonStyle(),
+                          icon: Icon(Icons.upload),
+                          label: Text("Submit"),
+                          onPressed: () async {
+                            final newFarmer = Farmer(
+                                uid: _uid.v4(),
+                                name: _nameController.text,
+                                phone: _phoneController.text);
+                            print(newFarmer.toString());
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            await ipfs.upload(context: context, farmer: newFarmer);
+                            // await Future.delayed(Duration(seconds: 3), () {});
+                            setState(() {
+                              _isLoading = false;
+                            });
+                            _isLoading = false;
+                          },
+                        )
+                      ],
+                    )),
+              ),
       )),
     );
   }
